@@ -55,8 +55,8 @@ app.put('/items/:id', (req: Request, res: Response) => {
 
 // Start the server only if this file is run directly
 if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running at http://0.0.0.0:${port}`);
   });
 }
 
