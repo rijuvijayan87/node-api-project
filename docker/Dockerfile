@@ -16,9 +16,13 @@ RUN npm run build
 FROM node:20-alpine
 WORKDIR /app
 
-# Copy package files and install only production dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --production=false
+
+# Copy source files, jest config, and tsconfig for testing
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/jest.config.js ./
+COPY --from=builder /app/tsconfig.json ./
 
 # Create a non-root user and switch to it
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
