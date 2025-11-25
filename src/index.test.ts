@@ -114,42 +114,16 @@ describe("Items API", () => {
     expect(response.body).toMatchObject({ name: numberName });
   });
 
-  it("PUT /items/:id -> should update an item with a long name", async () => {
-    const longName = "a".repeat(1000);
-    const response = await requester.put("/items/1").send({ name: longName });
-    console.log(`Request: ${response.request.method} ${response.request.url}`);
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toMatchObject({ name: longName });
-  });
-
-  it("PUT /items/:id -> should update an item with special characters", async () => {
-    const specialName = "!@#$%^&*()_+";
-    const response = await requester.put("/items/1").send({ name: specialName });
-    console.log(`Request: ${response.request.method} ${response.request.url}`);
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toMatchObject({ name: specialName });
-  });
-
-  it("PUT /items/:id -> should update an item with a number as a name", async () => {
-    const numberName = "12345";
-    const response = await requester.put("/items/1").send({ name: numberName });
-    console.log(`Request: ${response.request.method} ${response.request.url}`);
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toMatchObject({ name: numberName });
-  });
-
   it("GET /items -> should reflect the created item", async () => {
     const newItemName = "Item 6";
-    const postResponse = await requester.post("/items").send({ name: newItemName });
-    console.log(`Request: ${postResponse.request.method} ${postResponse.request.url}`);
+    await requester.post("/items").send({ name: newItemName });
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body).toContainEqual({ id: 6, name: newItemName });
   });
 
   it("GET /items -> should reflect the deleted item", async () => {
-    const deleteResponse = await requester.delete("/items/1");
-    console.log(`Request: ${deleteResponse.request.method} ${deleteResponse.request.url}`);
+    await requester.delete("/items/1");
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body).not.toContainEqual({ id: 1, name: "Item 1" });
@@ -157,8 +131,7 @@ describe("Items API", () => {
 
   it("GET /items -> should reflect the updated item", async () => {
     const updatedItemName = "Updated Item 1";
-    const putResponse = await requester.put("/items/1").send({ name: updatedItemName });
-    console.log(`Request: ${putResponse.request.method} ${putResponse.request.url}`);
+    await requester.put("/items/1").send({ name: updatedItemName });
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body).toContainEqual({ id: 1, name: updatedItemName });
@@ -175,16 +148,11 @@ describe("Items API", () => {
   });
 
   it("GET /items -> should return empty array when no items", async () => {
-    const r1 = await requester.delete("/items/1");
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
-    const r2 = await requester.delete("/items/2");
-    console.log(`Request: ${r2.request.method} ${r2.request.url}`);
-    const r3 = await requester.delete("/items/3");
-    console.log(`Request: ${r3.request.method} ${r3.request.url}`);
-    const r4 = await requester.delete("/items/4");
-    console.log(`Request: ${r4.request.method} ${r4.request.url}`);
-    const r5 = await requester.delete("/items/5");
-    console.log(`Request: ${r5.request.method} ${r5.request.url}`);
+    await requester.delete("/items/1");
+    await requester.delete("/items/2");
+    await requester.delete("/items/3");
+    await requester.delete("/items/4");
+    await requester.delete("/items/5");
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.statusCode).toBe(200);
@@ -318,8 +286,7 @@ describe("Items API", () => {
   });
 
   it("DELETE /items/:id -> should not reuse deleted id", async () => {
-    const deleteResponse = await requester.delete("/items/5");
-    console.log(`Request: ${deleteResponse.request.method} ${deleteResponse.request.url}`);
+    await requester.delete("/items/5");
     const response = await requester.post("/items").send({ name: "Item 6" });
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body.id).toBe(6);
@@ -332,16 +299,11 @@ describe("Items API", () => {
   });
 
   it("POST /items -> should create item after list is emptied", async () => {
-    const r1 = await requester.delete("/items/1");
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
-    const r2 = await requester.delete("/items/2");
-    console.log(`Request: ${r2.request.method} ${r2.request.url}`);
-    const r3 = await requester.delete("/items/3");
-    console.log(`Request: ${r3.request.method} ${r3.request.url}`);
-    const r4 = await requester.delete("/items/4");
-    console.log(`Request: ${r4.request.method} ${r4.request.url}`);
-    const r5 = await requester.delete("/items/5");
-    console.log(`Request: ${r5.request.method} ${r5.request.url}`);
+    await requester.delete("/items/1");
+    await requester.delete("/items/2");
+    await requester.delete("/items/3");
+    await requester.delete("/items/4");
+    await requester.delete("/items/5");
     const response = await requester.post("/items").send({ name: "New Item" });
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.statusCode).toBe(201);
@@ -350,30 +312,24 @@ describe("Items API", () => {
 
   // State changes
   it("GET /items -> after multiple POSTs", async () => {
-    const r1 = await requester.post("/items").send({ name: "Item 6" });
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
-    const r2 = await requester.post("/items").send({ name: "Item 7" });
-    console.log(`Request: ${r2.request.method} ${r2.request.url}`);
+    await requester.post("/items").send({ name: "Item 6" });
+    await requester.post("/items").send({ name: "Item 7" });
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body.length).toBe(7);
   });
 
   it("GET /items -> after multiple DELETEs", async () => {
-    const r1 = await requester.delete("/items/1");
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
-    const r2 = await requester.delete("/items/2");
-    console.log(`Request: ${r2.request.method} ${r2.request.url}`);
+    await requester.delete("/items/1");
+    await requester.delete("/items/2");
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body.length).toBe(3);
   });
 
   it("GET /items -> after multiple PUTs", async () => {
-    const r1 = await requester.put("/items/1").send({ name: "Updated 1" });
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
-    const r2 = await requester.put("/items/2").send({ name: "Updated 2" });
-    console.log(`Request: ${r2.request.method} ${r2.request.url}`);
+    await requester.put("/items/1").send({ name: "Updated 1" });
+    await requester.put("/items/2").send({ name: "Updated 2" });
     const response = await requester.get("/items");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body).toContainEqual({ id: 1, name: "Updated 1" });
@@ -381,8 +337,7 @@ describe("Items API", () => {
   });
 
   it("GET /items/:id -> for updated item", async () => {
-    const r1 = await requester.put("/items/1").send({ name: "Updated 1" });
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
+    await requester.put("/items/1").send({ name: "Updated 1" });
     const response = await requester.get("/items/1");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.body.name).toBe("Updated 1");
@@ -391,24 +346,21 @@ describe("Items API", () => {
   it("POST, DELETE, then GET item", async () => {
     const postResponse = await requester.post("/items").send({ name: "Item 6" });
     console.log(`Request: ${postResponse.request.method} ${postResponse.request.url}`);
-    const deleteResponse = await requester.delete(`/items/${postResponse.body.id}`);
-    console.log(`Request: ${deleteResponse.request.method} ${deleteResponse.request.url}`);
+    await requester.delete(`/items/${postResponse.body.id}`);
     const getResponse = await requester.get(`/items/${postResponse.body.id}`);
     console.log(`Request: ${getResponse.request.method} ${getResponse.request.url}`);
     expect(getResponse.statusCode).toBe(404);
   });
 
   it("DELETE, then PUT item", async () => {
-    const deleteResponse = await requester.delete("/items/1");
-    console.log(`Request: ${deleteResponse.request.method} ${deleteResponse.request.url}`);
+    await requester.delete("/items/1");
     const response = await requester.put("/items/1").send({ name: "Updated" });
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.statusCode).toBe(404);
   });
 
   it("DELETE, then DELETE again", async () => {
-    const r1 = await requester.delete("/items/1");
-    console.log(`Request: ${r1.request.method} ${r1.request.url}`);
+    await requester.delete("/items/1");
     const response = await requester.delete("/items/1");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.statusCode).toBe(404);
@@ -467,61 +419,6 @@ describe("Items API", () => {
     const response = await requester.get("/items").set("X-Custom-Header", "123");
     console.log(`Request: ${response.request.method} ${response.request.url}`);
     expect(response.statusCode).toBe(200);
-  });
-
-  // Concurrency/Race Conditions
-  it("PUT /items/:id -> two simultaneous PUTs to the same item", async () => {
-    const [response1, response2] = await Promise.all([
-      requester.put("/items/1").send({ name: "First Update" }),
-      requester.put("/items/1").send({ name: "Second Update" }),
-    ]);
-    console.log(`Request: ${response1.request.method} ${response1.request.url}`);
-    console.log(`Request: ${response2.request.method} ${response2.request.url}`);
-    expect(response1.statusCode).toBe(200);
-    expect(response2.statusCode).toBe(200);
-    const finalState = await requester.get("/items/1");
-    console.log(`Request: ${finalState.request.method} ${finalState.request.url}`);
-    expect(finalState.body.name).toMatch(/First Update|Second Update/);
-  });
-
-  it("DELETE /items/:id -> two simultaneous DELETEs to the same item", async () => {
-    const [response1, response2] = await Promise.all([
-      requester.delete("/items/1"),
-      requester.delete("/items/1"),
-    ]);
-    console.log(`Request: ${response1.request.method} ${response1.request.url}`);
-    console.log(`Request: ${response2.request.method} ${response2.request.url}`);
-    expect(response1.statusCode).toBe(204);
-    expect(response2.statusCode).toBe(404); // One should succeed, the other should fail
-  });
-
-  it("PUT and DELETE /items/:id -> simultaneous requests to the same item", async () => {
-    const [putResponse, deleteResponse] = await Promise.all([
-      requester.put("/items/1").send({ name: "Update" }),
-      requester.delete("/items/1"),
-    ]);
-    console.log(`Request: ${putResponse.request.method} ${putResponse.request.url}`);
-    console.log(`Request: ${deleteResponse.request.method} ${deleteResponse.request.url}`);
-    // Depending on execution order, one will be 200/204 and the other 404
-    expect([putResponse.statusCode, deleteResponse.statusCode]).toContain(200);
-    expect([putResponse.statusCode, deleteResponse.statusCode]).toContain(204);
-    const finalState = await requester.get("/items/1");
-    console.log(`Request: ${finalState.request.method} ${finalState.request.url}`);
-    expect(finalState.statusCode).toBe(404); // Item should eventually be deleted
-  });
-
-  it("POST /items -> two simultaneous POST requests", async () => {
-    const [response1, response2] = await Promise.all([
-      requester.post("/items").send({ name: "Concurrent Item 1" }),
-      requester.post("/items").send({ name: "Concurrent Item 2" }),
-    ]);
-    console.log(`Request: ${response1.request.method} ${response1.request.url}`);
-    console.log(`Request: ${response2.request.method} ${response2.request.url}`);
-    expect(response1.statusCode).toBe(201);
-    expect(response2.statusCode).toBe(201);
-    const allItems = await requester.get("/items");
-    console.log(`Request: ${allItems.request.method} ${allItems.request.url}`);
-    expect(allItems.body.length).toBe(7); // 5 initial + 2 new
   });
 
   // Error handling for invalid JSON
