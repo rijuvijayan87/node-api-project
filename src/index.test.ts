@@ -1,9 +1,13 @@
 import request from "supertest";
 import app from "./index";
 
+const API_BASE_URL = process.env.API_BASE_URL;
+
+const requester = API_BASE_URL ? request(API_BASE_URL) : request(app);
+
 describe("Items API", () => {
   it("GET /items -> should return all items", async () => {
-    const response = await request(app).get("/items");
+    const response = await requester.get("/items");
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([
       { id: 1, name: "Item 1" },
@@ -15,7 +19,7 @@ describe("Items API", () => {
 
   it("POST /items -> should create a new item", async () => {
     const newItemName = "Item 3";
-    const response = await request(app)
+    const response = await requester
       .post("/items")
       .send({ name: newItemName });
     expect(response.statusCode).toBe(201);
@@ -23,13 +27,13 @@ describe("Items API", () => {
   });
 
   it("POST /items -> should return 400 if name is missing", async () => {
-    const response = await request(app).post("/items").send({});
+    const response = await requester.post("/items").send({});
     expect(response.statusCode).toBe(400);
   });
 
   it("PUT /items/:id -> should update an existing item", async () => {
     const updatedItemName = "Updated Item 1";
-    const response = await request(app)
+    const response = await requester
       .put("/items/1")
       .send({ name: updatedItemName });
     expect(response.statusCode).toBe(200);
@@ -37,14 +41,14 @@ describe("Items API", () => {
   });
 
   it("PUT /items/:id -> should return 404 for non-existent item", async () => {
-    const response = await request(app)
+    const response = await requester
       .put("/items/99")
       .send({ name: "Non-existent" });
     expect(response.statusCode).toBe(404);
   });
 
   it("PUT /items/:id -> should return 400 if name is missing", async () => {
-    const response = await request(app).put("/items/1").send({});
+    const response = await requester.put("/items/1").send({});
     expect(response.statusCode).toBe(400);
   });
 });
