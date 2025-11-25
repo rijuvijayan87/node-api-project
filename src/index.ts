@@ -8,8 +8,8 @@ app.use(express.json());
 
 // Error handling middleware for JSON parsing errors
 app.use((err: any, req: Request, res: Response, next: Function) => {
-  if (err instanceof SyntaxError && 'body' in err) {
-    return res.status(400).send({ message: 'Malformed JSON in request body' });
+  if (err instanceof SyntaxError && "body" in err) {
+    return res.status(400).send({ message: "Malformed JSON in request body" });
   }
   next();
 });
@@ -45,7 +45,7 @@ let nextId = 6;
 
 // GET endpoint to retrieve all items
 app.get("/items", (req: Request, res: Response) => {
-  res.json(items);
+  res.json(items.slice(0, 3));
 });
 
 // GET endpoint to retrieve an item by ID
@@ -64,7 +64,9 @@ app.get("/items/:id", (req: Request, res: Response) => {
 app.post("/items", (req: Request, res: Response) => {
   const { name } = req.body;
   if (typeof name !== "string" || name.trim() === "") {
-    return res.status(400).send("Item name is required and must be a non-empty string");
+    return res
+      .status(400)
+      .send("Item name is required and must be a non-empty string");
   }
   const newItem: Item = {
     id: nextId++,
@@ -82,7 +84,9 @@ app.put("/items/:id", (req: Request, res: Response) => {
   if (itemIndex > -1) {
     const { name } = req.body;
     if (typeof name !== "string" || name.trim() === "") {
-      return res.status(400).send("Item name is required and must be a non-empty string");
+      return res
+        .status(400)
+        .send("Item name is required and must be a non-empty string");
     }
     const updatedItem = { ...items[itemIndex], name: name };
     items[itemIndex] = updatedItem;
