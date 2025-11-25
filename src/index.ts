@@ -45,7 +45,7 @@ let nextId = 6;
 
 // GET endpoint to retrieve all items
 app.get("/items", (req: Request, res: Response) => {
-  res.json(items.slice(0, 3));
+  res.json(items);
 });
 
 // GET endpoint to retrieve an item by ID
