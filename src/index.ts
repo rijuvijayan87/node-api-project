@@ -5,6 +5,15 @@ const port = 3000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Error handling middleware for JSON parsing errors
+app.use((err: any, req: Request, res: Response, next: Function) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).send({ message: 'Malformed JSON in request body' });
+  }
+  next();
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 // Options handler for /items
