@@ -105,6 +105,13 @@ app.delete("/items/:id", (req: Request, res: Response) => {
   }
 });
 
+if (process.env.NODE_ENV === "test") {
+  app.post("/test/reset", (req: Request, res: Response) => {
+    resetItemsForTest();
+    res.status(204).send();
+  });
+}
+
 // Start the server only if this file is run directly
 if (require.main === module) {
   app.listen(port, "0.0.0.0", () => {
